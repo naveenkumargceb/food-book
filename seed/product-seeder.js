@@ -8,38 +8,44 @@ var products = [new Product({
     imagepath: "/images/idly.jpg",
     title: "Idly",
     description: "2 Idlies with sambar and chutney",
-    price: "10",
-    menu: ['Breakfast', 'Dinner']
+    price: "20",
+    menu: ['Breakfast', 'Dinner'],
+    quantity: 50
 }), new Product({
     imagepath: "/images/dosa.jpg",
     title: "Dosa",
     description: "Plain dosa with sambar and chutney",
     price: "20",
-    menu: ['Breakfast', "Lunch", "Dinner"]
+    menu: ['Breakfast', "Lunch", "Dinner"],
+    quantity: 50
 }), new Product({
     imagepath: "/images/chapathi.jpg",
     title: "Chapathi",
     description: "2 chapathi with veg kuruma",
     price: "20",
-    menu: ['Breakfast', 'Lunch', 'Dinner']
+    menu: ['Breakfast', 'Lunch', 'Dinner'],
+    quantity: 50
 }), new Product({
     imagepath: "/images/poori.jpg",
     title: "Poori",
     description: "3 poori with potato masala",
     price: "30",
-    menu: ["Breakfast"]
+    menu: ["Breakfast"],
+    quantity: 50
 }), new Product({
     imagepath: "/images/meals.jpg",
     title: "Meals",
     description: "Full meals with rice, sambar, poriyal, rasam, papad and curd",
     price: "50",
-    menu: ["Lunch"]
+    menu: ["Lunch"],
+    quantity: 50
 }), new Product({
     imagepath: "/images/parota.jpg",
     title: "Parota",
     description: "1 parota with veg kuruma",
     price: "10",
-    menu: ["Dinner"]
+    menu: ["Dinner"],
+    quantity: 50
 })];
 
 var done = 0;

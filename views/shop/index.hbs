@@ -1,5 +1,8 @@
 <div class="products">
     <h1>Menus</h1>
+    {{# if nomessage}}
+    <div class="alert alert-success">{{successMsg}}</div>
+    {{/if}}
     {{# each products}}
     <div class="card-deck mb-3">
         {{# each this}}

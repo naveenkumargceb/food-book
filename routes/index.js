@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var Product = require("../models/product");
 var Cart = require("../models/cart");
+var Order = require("../models/order");
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   Product.find(function (err, docs) {
@@ -10,8 +12,12 @@ router.get('/', function (req, res, next) {
     for (var i = 0; i < docs.length; i += chunksize) {
       productchunk.push(docs.slice(i, i + chunksize))
     }
+    var successMsg = req.flash("success");
+
     res.render('shop/index', {
-      products: productchunk
+      products: productchunk,
+      successMsg: successMsg,
+      nomessage: successMsg.length
     });
   });
 });
@@ -61,4 +67,89 @@ router.post("/cart/update/:id", function (req, res, next) {
   }
   res.redirect("/cart");
 });
+
+router.get("/checkout", function (req, res, next) {
+  if (!req.session.cart) {
+    return res.redirect("/")
+  }
+  var cart = new Cart(req.session.cart);
+  res.render("shop/checkout", {
+    totalPrice: cart.totalPrice
+  });
+});
+
+router.post("/checkout", function (req, res, next) {
+  var cart = new Cart(req.session.cart);
+
+  const stripe = require('stripe')('sk_test_oVMSXUpMRwIhYPnwTKZg0jRW00xTVYZ94l');
+  stripe.charges.create({
+    amount: cart.totalPrice * 100,
+    currency: 'usd',
+    source: req.body.stripeToken,
+    receipt_email: 'dnaveenkumar1988@gmail.com',
+    description: "Test charge"
+  }).then((crg) => {
+    var order = new Order({
+      cart: cart,
+      user: req.user,
+      paymentId: crg.id,
+      date: new Date()
+    });
+    order.save(function (err, response) {
+      req.flash("success", "Successfully placed an order.");
+      var count = 0;
+      var cartLength = Object.keys(cart.items).length;
+      for (const key in cart.items) {
+        if (cart.items.hasOwnProperty(key)) {
+          const element = cart.items[key];
+          Product.findById(key, function (err, doc) {
+            var qty = doc.quantity;
+            var newqty = qty - element.qty;
+            if (newqty >= 0) {
+              Product.update({
+                _id: key
+              }, {
+                quantity: newqty
+              }, function (err, raw) {
+                count++;
+                if (count == cartLength) {
+                  req.session.cart = null;
+                  res.redirect("/orders");
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+  });
+});
+
+router.get("/orders", function (req, res, next) {
+  Order.find(function (err, orders) {
+    res.render("shop/orders", {
+      orders: orders
+    });
+  });
+});
+
+router.post("/update", function (req, res, next) {
+  var updatedObj = {
+    title: req.body.title,
+    imagepath: req.body.imagepath,
+    description: req.body.description,
+    price: parseInt(req.body.price),
+    quantity: parseInt(req.body.quantity),
+  };
+
+  Product.updateOne({
+    _id: req.body.id
+  }, updatedObj, function (err, raw) {
+    res.send({
+      success: "Admin updated stock."
+    });
+  });
+
+})
+
 module.exports = router;

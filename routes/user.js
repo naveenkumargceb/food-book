@@ -6,11 +6,28 @@ const {
 } = require('express-validator');
 var csrf = require("csurf");
 var csrfprotection = csrf();
+var Product = require("../models/product");
+var Order = require("../models/order");
 
 router.use(csrfprotection);
 
 router.get("/profile", isLoggedIn, function (req, res, next) {
-    res.render("user/profile");
+    if (req.user.role == "admin") {
+        Product.find(function (err, docs) {
+            res.render("user/profile", {
+                products: docs,
+                csrfToken: req.csrfToken()
+            });
+        });
+    } else {
+        Order.find(function (err, orders) {
+            res.render("user/profile", {
+                csrfToken: req.csrfToken(),
+                orders: orders
+            });
+        });
+    }
+
 });
 
 router.get("/logout", isLoggedIn, function (req, res, next) {

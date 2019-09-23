@@ -22,6 +22,10 @@ var userschema = new Schema({
     location: {
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+        required: false
     }
 });
 

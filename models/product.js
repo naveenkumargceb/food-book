@@ -21,6 +21,10 @@ var schema = new Schema({
     menu: {
         type: Array,
         required: true
+    },
+    quantity: {
+        type: Number,
+        required: false
     }
 });
 
